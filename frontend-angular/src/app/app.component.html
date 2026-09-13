@@ -1,0 +1,12 @@
+<div class="app">
+  <h1>Tempo real — Angular</h1>
+  <nav class="tabs">
+    <button [class.active]="active === 'polling'" (click)="setActive('polling')">Polling</button>
+    <button [class.active]="active === 'sse'" (click)="setActive('sse')">SSE</button>
+    <button [class.active]="active === 'socket'" (click)="setActive('socket')">WebSocket</button>
+  </nav>
+
+  <app-polling-panel *ngIf="active === 'polling'"></app-polling-panel>
+  <app-sse-panel *ngIf="active === 'sse'"></app-sse-panel>
+  <app-socket-panel *ngIf="active === 'socket'"></app-socket-panel>
+</div>

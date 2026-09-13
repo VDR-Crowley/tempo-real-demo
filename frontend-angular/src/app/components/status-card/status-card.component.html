@@ -1,0 +1,13 @@
+<div class="status-card">
+  <h3>{{ title }}</h3>
+  <span
+    class="badge"
+    [class.on]="connected"
+    [class.off]="connected === false"
+    *ngIf="connected !== null"
+  >
+    {{ connected ? 'conectado' : 'desconectado' }}
+  </span>
+  <p class="status-value">{{ data?.status ?? 'carregando...' }}</p>
+  <p class="status-time" *ngIf="data?.updatedAt">{{ data?.updatedAt | date:'HH:mm:ss' }}</p>
+</div>
