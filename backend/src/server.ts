@@ -7,8 +7,10 @@ import { attachWebSocket } from "./websocket.js";
 
 const app: Express = express();
 app.use(cors());
-app.use("/api", pollingRoute);
+// sseRoute (rota estática /orders/stream) precisa vir antes de pollingRoute
+// (rota dinâmica /orders/:id) — senão o :id casa com "stream" primeiro.
 app.use("/api", sseRoute);
+app.use("/api", pollingRoute);
 
 const server = http.createServer(app);
 attachWebSocket(server);
