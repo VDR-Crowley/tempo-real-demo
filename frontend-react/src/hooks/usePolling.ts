@@ -1,15 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchOrderStatus } from "../services/pollingService";
+import type { OrderStatus } from "../types/order";
 
-export function usePolling(orderId, intervalMs = 5000) {
-  const [data, setData] = useState(null);
-  const [log, setLog] = useState([]);
-  const timerRef = useRef(null);
+interface UsePollingResult {
+  data: OrderStatus | null;
+  log: OrderStatus[];
+}
+
+export function usePolling(orderId: string, intervalMs = 5000): UsePollingResult {
+  const [data, setData] = useState<OrderStatus | null>(null);
+  const [log, setLog] = useState<OrderStatus[]>([]);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    const tick = async () => {
+    const tick = async (): Promise<void> => {
       try {
         const result = await fetchOrderStatus(orderId);
         if (!cancelled) {
@@ -26,7 +32,9 @@ export function usePolling(orderId, intervalMs = 5000) {
 
     return () => {
       cancelled = true;
-      clearInterval(timerRef.current);
+      if (timerRef.current !== null) {
+        clearInterval(timerRef.current);
+      }
     };
   }, [orderId, intervalMs]);
 

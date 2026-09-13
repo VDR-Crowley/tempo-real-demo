@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { openOrderStream } from "../services/sseService";
+import type { OrderStatus } from "../types/order";
 
-export function useSSE() {
-  const [data, setData] = useState(null);
-  const [log, setLog] = useState([]);
-  const [connected, setConnected] = useState(false);
+interface UseSSEResult {
+  data: OrderStatus | null;
+  log: OrderStatus[];
+  connected: boolean;
+}
+
+export function useSSE(): UseSSEResult {
+  const [data, setData] = useState<OrderStatus | null>(null);
+  const [log, setLog] = useState<OrderStatus[]>([]);
+  const [connected, setConnected] = useState<boolean>(false);
 
   useEffect(() => {
     setConnected(true);

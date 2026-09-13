@@ -1,4 +1,12 @@
-export default function StatusCard({ title, data, connected }) {
+import type { OrderStatus } from "../types/order";
+
+interface StatusCardProps {
+  title: string;
+  data: OrderStatus | null;
+  connected?: boolean;
+}
+
+export default function StatusCard({ title, data, connected }: StatusCardProps) {
   return (
     <div className="status-card">
       <h3>{title}</h3>

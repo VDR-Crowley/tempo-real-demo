@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { openOrderSocket } from "../services/socketService";
+import type { OrderStatus } from "../types/order";
 
-export function useSocket() {
-  const [data, setData] = useState(null);
-  const [log, setLog] = useState([]);
-  const [connected, setConnected] = useState(false);
+interface UseSocketResult {
+  data: OrderStatus | null;
+  log: OrderStatus[];
+  connected: boolean;
+}
+
+export function useSocket(): UseSocketResult {
+  const [data, setData] = useState<OrderStatus | null>(null);
+  const [log, setLog] = useState<OrderStatus[]>([]);
+  const [connected, setConnected] = useState<boolean>(false);
 
   useEffect(() => {
     setConnected(true);

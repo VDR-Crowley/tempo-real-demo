@@ -1,6 +1,6 @@
 # Tempo Real Demo
 
-Projeto de demonstração comparando três estratégias de dados em tempo real — **Polling**, **Server-Sent Events (SSE)** e **WebSocket** — usando um único backend Node/Express e dois frontends independentes (React e Angular) que consomem os mesmos endpoints.
+Projeto de demonstração comparando três estratégias de dados em tempo real — **Polling**, **Server-Sent Events (SSE)** e **WebSocket** — usando um único backend Node/Express e dois frontends independentes (React e Angular) que consomem os mesmos endpoints. Backend e frontend React em **TypeScript** com tipagem estrita (`strict: true`, sem `any` implícito); frontend Angular já nasceu em TypeScript.
 
 O objetivo é didático: mostrar, lado a lado, como cada abordagem se comporta (quem inicia a comunicação, latência, direção do fluxo) e como estruturar a camada de serviço separada da camada de UI em cada framework.
 
@@ -8,17 +8,19 @@ O objetivo é didático: mostrar, lado a lado, como cada abordagem se comporta (
 
 ```
 tempo-real-demo/
-├── backend/               # API Node/Express + WebSocket (fonte única de dados)
+├── backend/               # API Node/Express + WebSocket, em TypeScript (fonte única de dados)
 │   └── src/
-│       ├── routes/        # polling.route.js, sse.route.js
-│       ├── websocket.js   # servidor WebSocket
-│       └── services/      # ordersService.js — estado dos pedidos, emite mudanças
-├── frontend-react/        # Cliente React (Vite)
+│       ├── types/         # order.ts — shape do payload (status, updatedAt, orderId opcional)
+│       ├── routes/        # polling.route.ts, sse.route.ts
+│       ├── websocket.ts   # servidor WebSocket
+│       └── services/      # ordersService.ts — estado dos pedidos, emite mudanças
+├── frontend-react/        # Cliente React (Vite + TypeScript)
 │   └── src/
-│       ├── services/      # api.js, pollingService.js, sseService.js, socketService.js
+│       ├── types/         # order.ts — mesmo shape do payload do backend
+│       ├── services/      # api.ts, pollingService.ts, sseService.ts, socketService.ts
 │       ├── hooks/         # usePolling, useSSE, useSocket — ligam serviço aos componentes
-│       └── components/    # PollingPanel, SSEPanel, SocketPanel, StatusCard, UpdateLog
-└── frontend-angular/      # Cliente Angular standalone
+│       └── components/    # PollingPanel, SSEPanel, SocketPanel, StatusCard, UpdateLog (.tsx)
+└── frontend-angular/      # Cliente Angular standalone (TypeScript)
     └── src/app/
         ├── services/      # polling.service.ts, sse.service.ts, socket.service.ts (@Injectable)
         └── components/    # polling-panel, sse-panel, socket-panel, status-card, update-log
@@ -34,9 +36,9 @@ Precisa de 3 terminais (backend + um ou dois frontends).
 ```bash
 cd backend
 npm install
-npm run dev
+npm run dev       # tsx watch — recompila TS a cada mudança
 ```
-Sobe em `http://localhost:4000`.
+Sobe em `http://localhost:4000`. `npm run build` gera `dist/` (tsc) e `npm start` roda o build.
 
 **Terminal 2 — Frontend React**
 ```bash
@@ -44,7 +46,7 @@ cd frontend-react
 npm install
 npm run dev
 ```
-Sobe em `http://localhost:5173` (padrão Vite).
+Sobe em `http://localhost:5173` (padrão Vite). `npm run build` roda `tsc -b` (typecheck) e depois `vite build`.
 
 **Terminal 3 — Frontend Angular**
 ```bash
@@ -70,7 +72,7 @@ Os três endpoints leem do mesmo `ordersService` — não há três fontes de da
 
 Os dois frontends seguem o mesmo princípio: **componentes de UI nunca falam direto com `fetch`/`WebSocket`/`EventSource`** — sempre passam por uma camada de serviço dedicada.
 
-- **React**: a lógica de comunicação vive em `src/services/*.js` (um arquivo por estratégia) e é exposta aos componentes via hooks customizados (`usePolling`, `useSSE`, `useSocket`, em `src/hooks/`). Os componentes em `src/components/` só consomem o hook e renderizam o estado — não sabem como o dado chegou.
+- **React**: a lógica de comunicação vive em `src/services/*.ts` (um arquivo por estratégia) e é exposta aos componentes via hooks customizados (`usePolling`, `useSSE`, `useSocket`, em `src/hooks/`). Os componentes em `src/components/` só consomem o hook e renderizam o estado — não sabem como o dado chegou. O tipo `OrderStatus` (`src/types/order.ts`) atravessa serviço → hook → componente sem nenhum `any`.
 - **Angular**: cada estratégia tem seu próprio serviço `@Injectable` (`polling.service.ts`, `sse.service.ts`, `socket.service.ts`) que expõe o estado via RxJS. Os componentes standalone em `src/app/components/` apenas injetam o serviço correspondente e fazem bind no template.
 
 Essa separação deixa claro, nos dois frameworks, onde termina "como buscar o dado" e onde começa "como exibir o dado" — README de cada subpasta detalha mais.

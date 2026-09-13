@@ -1,4 +1,10 @@
-export default function UpdateLog({ items }) {
+import type { OrderStatus } from "../types/order";
+
+interface UpdateLogProps {
+  items: OrderStatus[];
+}
+
+export default function UpdateLog({ items }: UpdateLogProps) {
   return (
     <ul className="update-log">
       {items.map((item, i) => (
