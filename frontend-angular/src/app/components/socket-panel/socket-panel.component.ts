@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Subscription } from "rxjs";
 import { SocketService } from "../../services/socket.service";
@@ -12,15 +12,29 @@ import { UpdateLogComponent } from "../update-log/update-log.component";
   imports: [CommonModule, StatusCardComponent, UpdateLogComponent],
   templateUrl: "./socket-panel.component.html",
 })
-export class SocketPanelComponent implements OnInit, OnDestroy {
+export class SocketPanelComponent implements OnDestroy {
   data: OrderStatus | null = null;
   log: OrderStatus[] = [];
   connected = false;
+  running = false;
   private sub?: Subscription;
 
   constructor(private socketService: SocketService) {}
 
-  ngOnInit() {
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  toggle() {
+    if (this.running) {
+      this.stop();
+    } else {
+      this.start();
+    }
+  }
+
+  private start() {
+    this.running = true;
     this.connected = true;
     this.sub = this.socketService.watch().subscribe({
       next: (s) => {
@@ -31,7 +45,9 @@ export class SocketPanelComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  private stop() {
+    this.running = false;
+    this.connected = false;
     this.sub?.unsubscribe();
   }
 }

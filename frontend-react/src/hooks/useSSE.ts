@@ -6,14 +6,22 @@ interface UseSSEResult {
   data: OrderStatus | null;
   log: OrderStatus[];
   connected: boolean;
+  running: boolean;
+  toggle: () => void;
 }
 
 export function useSSE(): UseSSEResult {
   const [data, setData] = useState<OrderStatus | null>(null);
   const [log, setLog] = useState<OrderStatus[]>([]);
   const [connected, setConnected] = useState<boolean>(false);
+  const [running, setRunning] = useState<boolean>(false);
 
   useEffect(() => {
+    if (!running) {
+      setConnected(false);
+      return;
+    }
+
     setConnected(true);
     const close = openOrderStream(
       (snapshot) => {
@@ -27,7 +35,9 @@ export function useSSE(): UseSSEResult {
       close();
       setConnected(false);
     };
-  }, []);
+  }, [running]);
 
-  return { data, log, connected };
+  const toggle = () => setRunning((r) => !r);
+
+  return { data, log, connected, running, toggle };
 }

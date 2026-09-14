@@ -5,14 +5,21 @@ import type { OrderStatus } from "../types/order";
 interface UsePollingResult {
   data: OrderStatus | null;
   log: OrderStatus[];
+  running: boolean;
+  toggle: () => void;
 }
 
 export function usePolling(orderId: string, intervalMs = 5000): UsePollingResult {
   const [data, setData] = useState<OrderStatus | null>(null);
   const [log, setLog] = useState<OrderStatus[]>([]);
+  const [running, setRunning] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    if (!running) {
+      return;
+    }
+
     let cancelled = false;
 
     const tick = async (): Promise<void> => {
@@ -36,7 +43,9 @@ export function usePolling(orderId: string, intervalMs = 5000): UsePollingResult
         clearInterval(timerRef.current);
       }
     };
-  }, [orderId, intervalMs]);
+  }, [orderId, intervalMs, running]);
 
-  return { data, log };
+  const toggle = () => setRunning((r) => !r);
+
+  return { data, log, running, toggle };
 }

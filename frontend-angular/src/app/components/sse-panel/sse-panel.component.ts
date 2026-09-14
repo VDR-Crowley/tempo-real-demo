@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Subscription } from "rxjs";
 import { SseService } from "../../services/sse.service";
@@ -12,15 +12,29 @@ import { UpdateLogComponent } from "../update-log/update-log.component";
   imports: [CommonModule, StatusCardComponent, UpdateLogComponent],
   templateUrl: "./sse-panel.component.html",
 })
-export class SsePanelComponent implements OnInit, OnDestroy {
+export class SsePanelComponent implements OnDestroy {
   data: OrderStatus | null = null;
   log: OrderStatus[] = [];
   connected = false;
+  running = false;
   private sub?: Subscription;
 
   constructor(private sseService: SseService) {}
 
-  ngOnInit() {
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  toggle() {
+    if (this.running) {
+      this.stop();
+    } else {
+      this.start();
+    }
+  }
+
+  private start() {
+    this.running = true;
     this.connected = true;
     this.sub = this.sseService.watch().subscribe({
       next: (s) => {
@@ -31,7 +45,9 @@ export class SsePanelComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  private stop() {
+    this.running = false;
+    this.connected = false;
     this.sub?.unsubscribe();
   }
 }

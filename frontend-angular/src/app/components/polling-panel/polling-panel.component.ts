@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Subscription } from "rxjs";
 import { PollingService, OrderStatus } from "../../services/polling.service";
@@ -11,19 +11,34 @@ import { UpdateLogComponent } from "../update-log/update-log.component";
   imports: [CommonModule, StatusCardComponent, UpdateLogComponent],
   templateUrl: "./polling-panel.component.html",
 })
-export class PollingPanelComponent implements OnInit, OnDestroy {
+export class PollingPanelComponent implements OnDestroy {
   data: OrderStatus | null = null;
   log: OrderStatus[] = [];
+  running = false;
   private sub?: Subscription;
 
   constructor(private pollingService: PollingService) {}
 
-  ngOnInit() {
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  toggle() {
+    if (this.running) {
+      this.stop();
+    } else {
+      this.start();
+    }
+  }
+
+  private start() {
+    this.running = true;
     this.pollingService.fetchOnce("123").subscribe((s) => this.push(s));
     this.sub = this.pollingService.watch("123", 5000).subscribe((s) => this.push(s));
   }
 
-  ngOnDestroy() {
+  private stop() {
+    this.running = false;
     this.sub?.unsubscribe();
   }
 
