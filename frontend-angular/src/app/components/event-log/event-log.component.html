@@ -1,0 +1,6 @@
+<ul class="event-log">
+  <li *ngFor="let row of rows" [ngClass]="'event-log__row event-log__row--' + row.tone">
+    <strong>{{ row.primary }}</strong>
+    <span class="event-log__secondary" *ngIf="row.secondary"> — {{ row.secondary }}</span>
+  </li>
+</ul>

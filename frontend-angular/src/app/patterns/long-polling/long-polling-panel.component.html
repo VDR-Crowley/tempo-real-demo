@@ -1,0 +1,16 @@
+<section>
+  <div class="panel-controls">
+    <button (click)="toggle()" [disabled]="done || !orderId">{{ running ? 'Parar' : 'Iniciar' }}</button>
+    <button (click)="newOrder()">Novo pedido</button>
+  </div>
+  <app-status-timeline [currentStatus]="status" [done]="done"></app-status-timeline>
+  <p class="last-event-id">
+    {{ metrics.requests }} requests · {{ metrics.changes }} mudanças — o servidor segura a conexão o resto
+    do tempo, sem request "no vácuo" como no polling comum.
+  </p>
+  <div class="finish-banner" *ngIf="done && summary">
+    <span class="badge on">concluído</span>
+    <p>{{ summary }}</p>
+  </div>
+  <app-event-log [rows]="rows"></app-event-log>
+</section>

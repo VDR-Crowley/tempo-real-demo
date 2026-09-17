@@ -1,0 +1,39 @@
+<section>
+  <div class="panel-controls">
+    <button (click)="toggle()" [disabled]="!orderId">{{ running ? 'Desconectar' : 'Conectar' }}</button>
+    <input
+      class="nick-input"
+      [value]="nick"
+      (input)="nick = $any($event.target).value"
+      [disabled]="running"
+      aria-label="Apelido"
+    />
+  </div>
+
+  <div class="socket-half">
+    <h3>Servidor → cliente</h3>
+    <app-connection-badge [state]="connectionState"></app-connection-badge>
+    <app-status-timeline [currentStatus]="status" [done]="done"></app-status-timeline>
+  </div>
+
+  <div class="socket-half">
+    <h3>Cliente ↔ cliente</h3>
+    <p class="presence">
+      {{ peers.length }} conectados —
+      <ng-container *ngFor="let peer of peers; let last = last"
+        >{{ isSelf(peer) ? 'você (Angular)' : peer.nick }}{{ last ? '' : ' · ' }}</ng-container
+      >
+    </p>
+    <app-chat-panel
+      [messages]="messages"
+      [typingLabel]="typingLabel"
+      [value]="chatInput"
+      (valueChange)="onChatInputChange($event)"
+      (send)="sendChat()"
+    ></app-chat-panel>
+    <p class="frames">
+      <span class="frames__sent">↑ enviados: {{ frames.sent }}</span>
+      <span class="frames__received">↓ recebidos: {{ frames.received }}</span>
+    </p>
+  </div>
+</section>

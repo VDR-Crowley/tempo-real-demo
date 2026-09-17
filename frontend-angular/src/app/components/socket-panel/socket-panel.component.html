@@ -1,7 +1,0 @@
-<section>
-  <div class="panel-controls">
-    <button (click)="toggle()">{{ running ? 'Parar' : 'Iniciar' }}</button>
-  </div>
-  <app-status-card title="WebSocket" [data]="data" [connected]="connected"></app-status-card>
-  <app-update-log [items]="log"></app-update-log>
-</section>

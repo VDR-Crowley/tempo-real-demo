@@ -1,0 +1,22 @@
+<section>
+  <div class="panel-controls">
+    <button (click)="toggle()" [disabled]="done || !orderId">{{ running ? 'Parar' : 'Iniciar' }}</button>
+    <button (click)="newOrder()">Novo pedido</button>
+    <select (change)="onIntervalChange($any($event.target).value)">
+      <option *ngFor="let option of intervalOptions" [value]="option.value" [selected]="option.value === intervalMs">
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+  <app-status-timeline [currentStatus]="status" [done]="done"></app-status-timeline>
+  <app-metrics-bar
+    [requests]="metrics.requests"
+    [unchanged]="metrics.unchanged"
+    [lastChangeDelayMs]="metrics.lastChangeDelayMs"
+  ></app-metrics-bar>
+  <div class="finish-banner" *ngIf="done && summary">
+    <span class="badge on">concluído</span>
+    <p>{{ summary }}</p>
+  </div>
+  <app-event-log [rows]="rows"></app-event-log>
+</section>

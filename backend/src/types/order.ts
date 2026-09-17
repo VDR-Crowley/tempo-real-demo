@@ -1,5 +1,5 @@
-// Tipo compartilhado do "estado do pedido" — as três rotas (polling/SSE/WebSocket)
-// leem/emitem esse mesmo shape, então ele mora num só lugar.
+// Tipo compartilhado do "estado do pedido" — polling, SSE e WebSocket leem
+// esse mesmo shape, então ele mora num só lugar.
 
 export const ORDER_STATUSES = [
   "Recebido",
@@ -10,13 +10,15 @@ export const ORDER_STATUSES = [
 
 export type OrderStatusValue = (typeof ORDER_STATUSES)[number];
 
-// Snapshot puro do ordersService — sem orderId, que é um detalhe da rota de polling.
-export interface OrderStatusSnapshot {
+// Snapshot do pedido num instante (usado por GET/POST e como base do evento).
+export interface OrderSnapshot {
+  orderId: string;
   status: OrderStatusValue;
+  seq: number;
   updatedAt: string;
+  done: boolean;
 }
 
-// Payload de resposta da rota de polling: snapshot + qual pedido foi consultado.
-export interface OrderStatus extends OrderStatusSnapshot {
-  orderId?: string;
-}
+// Uma transição do pedido — mesmo shape do snapshot, guardado em histórico
+// pra permitir o replay do SSE via Last-Event-ID.
+export type OrderEvent = OrderSnapshot;

@@ -1,16 +1,31 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import http from "node:http";
-import { pollingRoute } from "./routes/polling.route.js";
-import { sseRoute } from "./routes/sse.route.js";
-import { attachWebSocket } from "./websocket.js";
+import { ordersRoute } from "./core/orders.route.js";
+import { pollingRoute } from "./patterns/polling/polling.route.js";
+import { longPollingRoute } from "./patterns/long-polling/long-polling.route.js";
+import { sseRoute } from "./patterns/sse/sse.route.js";
+import { attachWebSocket } from "./patterns/websocket/websocket.js";
+
+// Quatro jeitos do front descobrir que um pedido mudou, um por pasta em
+// src/patterns/: polling, long-polling, sse, websocket.
+//
+// HTTP streaming (a resposta abre e desce em pedaços, sem contrato de
+// evento) não ganhou pasta própria aqui — ele mora conceitualmente entre
+// long-polling e SSE: é "long-polling que, em vez de fechar e reabrir a
+// cada novidade, manda o pedaço e continua aberto". SSE é HTTP streaming
+// com um contrato em cima (event/id/retry + reconexão automática do
+// navegador) — é por isso que todo SSE é HTTP streaming, mas nem todo HTTP
+// streaming é SSE. Não tem exemplo rodando aqui porque SSE já cobre o caso
+// de uso do demo (push de status); NDJSON/streaming cru valeria a pena só
+// se o payload fosse grande o bastante pra importar ler aos pedaços.
 
 const app: Express = express();
 app.use(cors());
-// sseRoute (rota estática /orders/stream) precisa vir antes de pollingRoute
-// (rota dinâmica /orders/:id) — senão o :id casa com "stream" primeiro.
-app.use("/api", sseRoute);
+app.use("/api", ordersRoute);
 app.use("/api", pollingRoute);
+app.use("/api", longPollingRoute);
+app.use("/api", sseRoute);
 
 const server = http.createServer(app);
 attachWebSocket(server);
@@ -18,7 +33,11 @@ attachWebSocket(server);
 const PORT: number = Number(process.env.PORT) || 4000;
 server.listen(PORT, () => {
   console.log(`Backend rodando em http://localhost:${PORT}`);
-  console.log("  Polling    -> GET  /api/orders/:id");
-  console.log("  SSE        -> GET  /api/orders/stream");
-  console.log("  WebSocket  -> ws   /api/orders/socket");
+  console.log("  POST /api/orders");
+  console.log("  POST /api/orders/:id/advance");
+  console.log("  GET  /api/orders/:id                — polling");
+  console.log("  GET  /api/orders/:id/long-poll       — long polling");
+  console.log("  GET  /api/orders/:id/stream          — SSE");
+  console.log("  POST /api/dev/drop-sse");
+  console.log("  ws   /api/orders/socket              — WebSocket");
 });

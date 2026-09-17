@@ -6,6 +6,9 @@
   --text-secondary: #9aa0ae;
   --accent: #5ec8ea;
   --accent-warm: #e8b46e;
+  /* Cores fixas de app — usadas no badge do chat, independem do --accent local */
+  --angular-accent: #ea5e5e;
+  --react-accent: #5ec8ea;
 }
 
 * { box-sizing: border-box; }
@@ -19,6 +22,7 @@ body {
 
 .app { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
 h1 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+h3 { font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); margin: 1.5rem 0 0.75rem; }
 
 .tabs {
   display: flex;
@@ -45,8 +49,10 @@ h1 { font-size: 1.5rem; margin-bottom: 1.5rem; }
   font-weight: bold;
 }
 
-.panel-controls { display: flex; justify-content: flex-end; margin-bottom: 0.75rem; }
-.panel-controls button {
+.panel-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: flex-end; margin-bottom: 1rem; }
+.panel-controls button,
+.panel-controls select,
+.panel-controls input {
   background: transparent;
   border: 1px solid var(--accent);
   color: var(--accent);
@@ -55,18 +61,92 @@ h1 { font-size: 1.5rem; margin-bottom: 1.5rem; }
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: bold;
+  font-family: inherit;
+}
+.panel-controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+.panel-controls input { cursor: text; font-weight: normal; }
+
+.badge { display: inline-block; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: bold; margin-bottom: 0.75rem; }
+.badge.on,
+.badge--conectado { background: rgba(94, 200, 234, 0.15); color: var(--accent); }
+.badge--conectando { background: rgba(154, 160, 174, 0.15); color: var(--text-secondary); }
+.badge--reconectando,
+.badge--desconectado { background: rgba(232, 180, 110, 0.15); color: var(--accent-warm); }
+
+.status-timeline { display: flex; list-style: none; padding: 0; margin: 0 0 1rem; gap: 0.5rem; }
+.status-timeline__step {
+  flex: 1;
+  text-align: center;
+  padding: 0.6rem 0.4rem;
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  border: 1px solid var(--line);
+}
+.status-timeline__step--current { border-color: var(--accent); color: var(--accent); font-weight: bold; }
+.status-timeline__step--done { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: bold; }
+
+.metrics-bar { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+.metrics-bar__item { flex: 1; background: var(--panel); border-radius: 12px; padding: 0.75rem; text-align: center; }
+.metrics-bar__value { display: block; font-size: 1.25rem; font-weight: bold; color: var(--accent); }
+.metrics-bar__label { display: block; font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; }
+
+.event-log { list-style: none; padding: 0; margin: 0; background: var(--panel); border-radius: 12px; overflow: hidden; }
+.event-log__row { padding: 0.6rem 1rem; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--text-secondary); }
+.event-log__row:last-child { border-bottom: none; }
+.event-log__row strong { color: var(--text); }
+.event-log__row--unchanged { opacity: 0.45; }
+.event-log__row--changed strong { color: var(--accent); }
+.event-log__row--marker { font-style: italic; color: var(--accent-warm); }
+.event-log__secondary { color: var(--text-secondary); }
+
+.last-event-id { color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 1rem; }
+
+.finish-banner { background: var(--panel); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1rem; }
+.finish-banner p { margin: 0.25rem 0 0; color: var(--text-secondary); }
+
+.socket-half { background: var(--panel); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1rem; }
+.presence { color: var(--text-secondary); font-size: 0.85rem; }
+
+.chat-panel__messages { list-style: none; padding: 0; margin: 0 0 0.5rem; max-height: 220px; overflow-y: auto; }
+.chat-panel__message { padding: 0.4rem 0; border-bottom: 1px solid var(--line); font-size: 0.85rem; }
+.chat-panel__message:last-child { border-bottom: none; }
+.chat-panel__message p { margin: 0.15rem 0 0; }
+.chat-panel__badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  margin-right: 0.4rem;
+  text-transform: uppercase;
+}
+.chat-panel__badge--angular { background: rgba(234, 94, 94, 0.15); color: var(--angular-accent); }
+.chat-panel__badge--react { background: rgba(94, 200, 234, 0.15); color: var(--react-accent); }
+.chat-panel__time { color: var(--text-secondary); font-size: 0.75rem; margin-left: 0.4rem; }
+.chat-panel__typing { min-height: 1.2rem; color: var(--text-secondary); font-size: 0.8rem; font-style: italic; }
+.chat-panel__form { display: flex; gap: 0.5rem; }
+.chat-panel__form input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+.chat-panel__form button {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.status-card { background: var(--panel); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
-.status-card h3 { margin: 0 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; }
-.status-value { font-size: 1.75rem; font-weight: bold; color: var(--accent); margin: 0.5rem 0 0.25rem; }
-.status-time { color: var(--text-secondary); font-size: 0.85rem; margin: 0; }
+.frames { display: flex; gap: 1rem; font-size: 0.8rem; margin-top: 0.75rem; }
+.frames__sent { color: var(--accent); }
+.frames__received { color: var(--accent-warm); }
 
-.badge { display: inline-block; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: bold; }
-.badge.on { background: rgba(94, 200, 234, 0.15); color: var(--accent); }
-.badge.off { background: rgba(232, 180, 110, 0.15); color: var(--accent-warm); }
-
-.update-log { list-style: none; padding: 0; margin: 0; background: var(--panel); border-radius: 12px; overflow: hidden; }
-.update-log li { padding: 0.6rem 1rem; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--text-secondary); }
-.update-log li:last-child { border-bottom: none; }
-.update-log strong { color: var(--text); }
+.nick-input { background: var(--bg); }

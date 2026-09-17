@@ -1,0 +1,20 @@
+<div class="chat-panel">
+  <ul class="chat-panel__messages">
+    <li *ngFor="let message of messages" class="chat-panel__message">
+      <span [ngClass]="'chat-panel__badge chat-panel__badge--' + message.app">{{ message.app }}</span>
+      <strong>{{ message.nick }}</strong>
+      <span class="chat-panel__time">{{ formatTime(message.at) }}</span>
+      <p>{{ message.text }}</p>
+    </li>
+  </ul>
+  <p class="chat-panel__typing">{{ typingLabel || " " }}</p>
+  <form class="chat-panel__form" (ngSubmit)="onSubmit()">
+    <input
+      [ngModel]="value"
+      (ngModelChange)="onInput($event)"
+      name="chatMessage"
+      placeholder="Digite uma mensagem..."
+    />
+    <button type="submit">Enviar</button>
+  </form>
+</div>

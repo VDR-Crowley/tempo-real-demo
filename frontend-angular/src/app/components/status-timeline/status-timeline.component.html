@@ -1,0 +1,8 @@
+<ol class="status-timeline">
+  <li
+    *ngFor="let status of statuses; let i = index"
+    [ngClass]="'status-timeline__step status-timeline__step--' + stepState(status, i)"
+  >
+    {{ status }}
+  </li>
+</ol>
