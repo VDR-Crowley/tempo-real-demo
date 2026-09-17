@@ -1,0 +1,13 @@
+<div class="select">
+  <button type="button" class="select__trigger" (click)="toggle()">{{ current?.label }}</button>
+  <ul class="select__menu" *ngIf="open">
+    <li
+      *ngFor="let option of options"
+      class="select__option"
+      [class.select__option--selected]="option.value === value"
+      (click)="select(option)"
+    >
+      {{ option.label }}
+    </li>
+  </ul>
+</div>

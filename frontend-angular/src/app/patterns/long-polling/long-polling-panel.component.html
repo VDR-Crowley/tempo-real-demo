@@ -2,6 +2,7 @@
   <div class="panel-controls">
     <button (click)="toggle()" [disabled]="done || !orderId">{{ running ? 'Parar' : 'Iniciar' }}</button>
     <button (click)="newOrder()">Novo pedido</button>
+    <button (click)="advanceNow()" [disabled]="!orderId || done">Avançar agora</button>
   </div>
   <app-status-timeline [currentStatus]="status" [done]="done"></app-status-timeline>
   <p class="last-event-id">

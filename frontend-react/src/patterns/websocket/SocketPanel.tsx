@@ -1,6 +1,5 @@
 import { useCurrentOrderId } from "../../hooks/useCurrentOrder";
 import { useSocket } from "./useSocket";
-import StatusTimeline from "../../components/StatusTimeline";
 import ConnectionBadge from "../../components/ConnectionBadge";
 import ChatPanel from "../../components/ChatPanel";
 
@@ -14,8 +13,6 @@ export default function SocketPanel() {
     toggle,
     nick,
     setNick,
-    status,
-    done,
     peers,
     messages,
     typingLabel,
@@ -44,7 +41,6 @@ export default function SocketPanel() {
       <div className="socket-half">
         <h3>Servidor → cliente</h3>
         <ConnectionBadge state={connectionState} />
-        <StatusTimeline currentStatus={status} done={done} />
       </div>
 
       <div className="socket-half">

@@ -13,6 +13,7 @@ import { EventLogComponent, LogRow } from "../../components/event-log/event-log.
 
 const MAX_ROWS = 8;
 const RETRY_SECONDS = 3;
+const AUTO_ADVANCE_MS = 5000;
 
 @Component({
   selector: "app-sse-panel",
@@ -34,6 +35,7 @@ export class SsePanelComponent implements OnDestroy {
   private orderSub: Subscription;
   private streamSub?: Subscription;
   private countdownTimer?: ReturnType<typeof setInterval>;
+  private autoAdvanceTimer?: ReturnType<typeof setInterval>;
   private hasConnectedOnce = false;
 
   constructor(
@@ -52,6 +54,7 @@ export class SsePanelComponent implements OnDestroy {
     this.orderSub.unsubscribe();
     this.streamSub?.unsubscribe();
     this.stopCountdown();
+    this.stopAutoAdvance();
   }
 
   toggle(): void {
@@ -79,6 +82,7 @@ export class SsePanelComponent implements OnDestroy {
   private resetRun(): void {
     this.streamSub?.unsubscribe();
     this.stopCountdown();
+    this.stopAutoAdvance();
     this.running = false;
     this.status = null;
     this.done = false;
@@ -98,6 +102,22 @@ export class SsePanelComponent implements OnDestroy {
       clearInterval(this.countdownTimer);
       this.countdownTimer = undefined;
     }
+  }
+
+  private stopAutoAdvance(): void {
+    if (this.autoAdvanceTimer !== undefined) {
+      clearInterval(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = undefined;
+    }
+  }
+
+  private startAutoAdvance(): void {
+    this.stopAutoAdvance();
+    this.autoAdvanceTimer = setInterval(() => {
+      if (this.orderId) {
+        this.ordersApi.advance(this.orderId).subscribe();
+      }
+    }, AUTO_ADVANCE_MS);
   }
 
   private startCountdown(): void {
@@ -134,10 +154,12 @@ export class SsePanelComponent implements OnDestroy {
         this.hasConnectedOnce = true;
         this.attempt = 0;
         this.connectionState = "conectado";
+        this.startAutoAdvance();
         return;
       }
 
       if (update.kind === "error") {
+        this.stopAutoAdvance();
         if (!this.hasConnectedOnce) {
           this.connectionState = "conectando";
           return;
@@ -180,5 +202,6 @@ export class SsePanelComponent implements OnDestroy {
     this.running = false;
     this.streamSub?.unsubscribe();
     this.stopCountdown();
+    this.stopAutoAdvance();
   }
 }

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useCurrentOrderId, startNewOrder } from "../../hooks/useCurrentOrder";
 import { useSSE } from "./useSSE";
 import { advanceOrder } from "../../services/orderService";
@@ -6,10 +7,22 @@ import StatusTimeline from "../../components/StatusTimeline";
 import ConnectionBadge from "../../components/ConnectionBadge";
 import EventLog from "../../components/EventLog";
 
+const AUTO_ADVANCE_MS = 5000;
+
 export default function SSEPanel() {
   const orderId = useCurrentOrderId();
   const { status, done, connectionState, lastEventId, attempt, retryInSeconds, rows, running, toggle } =
     useSSE(orderId);
+
+  useEffect(() => {
+    if (!orderId || done || connectionState !== "conectado") {
+      return;
+    }
+    const timer = setInterval(() => {
+      advanceOrder(orderId);
+    }, AUTO_ADVANCE_MS);
+    return () => clearInterval(timer);
+  }, [orderId, done, connectionState]);
 
   return (
     <section>

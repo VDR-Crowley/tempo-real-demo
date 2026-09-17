@@ -1,1 +1,4 @@
-<span [ngClass]="'badge badge--' + state">{{ label }}</span>
+<span [ngClass]="'badge badge--' + state">
+  <span class="badge__dot"></span>
+  {{ label }}
+</span>

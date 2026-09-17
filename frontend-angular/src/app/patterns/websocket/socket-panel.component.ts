@@ -6,7 +6,6 @@ import { CurrentOrderService } from "../../services/current-order.service";
 import { OrderStatusValue } from "../../types/order";
 import { ClientApp, PresencePeer, ServerMessage } from "../../types/ws";
 import { ConnectionState } from "../../types/connection";
-import { StatusTimelineComponent } from "../../components/status-timeline/status-timeline.component";
 import { ConnectionBadgeComponent } from "../../components/connection-badge/connection-badge.component";
 import { ChatPanelComponent, ChatMessageView } from "../../components/chat-panel/chat-panel.component";
 
@@ -17,7 +16,7 @@ const TYPING_TIMEOUT_MS = 2000;
 @Component({
   selector: "app-socket-panel",
   standalone: true,
-  imports: [CommonModule, StatusTimelineComponent, ConnectionBadgeComponent, ChatPanelComponent],
+  imports: [CommonModule, ConnectionBadgeComponent, ChatPanelComponent],
   templateUrl: "./socket-panel.component.html",
 })
 export class SocketPanelComponent implements OnDestroy {

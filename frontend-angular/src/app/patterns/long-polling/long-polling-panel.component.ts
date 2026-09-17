@@ -2,6 +2,7 @@ import { Component, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Subscription } from "rxjs";
 import { LongPollingService } from "./long-polling.service";
+import { OrdersApiService } from "../../services/orders-api.service";
 import { CurrentOrderService } from "../../services/current-order.service";
 import { OrderSnapshot, OrderStatusValue } from "../../types/order";
 import { StatusTimelineComponent } from "../../components/status-timeline/status-timeline.component";
@@ -37,6 +38,7 @@ export class LongPollingPanelComponent implements OnDestroy {
 
   constructor(
     private longPollingService: LongPollingService,
+    private ordersApi: OrdersApiService,
     private currentOrder: CurrentOrderService
   ) {
     this.orderSub = this.currentOrder.orderId$.subscribe((orderId) => {
@@ -61,6 +63,12 @@ export class LongPollingPanelComponent implements OnDestroy {
 
   newOrder(): void {
     void this.currentOrder.startNewOrder();
+  }
+
+  advanceNow(): void {
+    if (this.orderId) {
+      this.ordersApi.advance(this.orderId).subscribe();
+    }
   }
 
   private resetRun(): void {

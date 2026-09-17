@@ -1,5 +1,6 @@
 import { useCurrentOrderId, startNewOrder } from "../../hooks/useCurrentOrder";
 import { useLongPolling } from "./useLongPolling";
+import { advanceOrder } from "../../services/orderService";
 import StatusTimeline from "../../components/StatusTimeline";
 import EventLog from "../../components/EventLog";
 
@@ -14,6 +15,9 @@ export default function LongPollingPanel() {
           {running ? "Parar" : "Iniciar"}
         </button>
         <button onClick={() => startNewOrder()}>Novo pedido</button>
+        <button onClick={() => orderId && advanceOrder(orderId)} disabled={!orderId || done}>
+          Avançar agora
+        </button>
       </div>
       <StatusTimeline currentStatus={status} done={done} />
       <p className="last-event-id">

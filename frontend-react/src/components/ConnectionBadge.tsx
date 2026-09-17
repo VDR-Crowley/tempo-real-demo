@@ -19,5 +19,10 @@ export default function ConnectionBadge({ state, attempt, retryInSeconds }: Conn
       ? `reconectando (tentativa ${attempt}, em ${retryInSeconds}s)`
       : LABELS[state];
 
-  return <span className={`badge badge--${state}`}>{label}</span>;
+  return (
+    <span className={`badge badge--${state}`}>
+      <span className="badge__dot" />
+      {label}
+    </span>
+  );
 }

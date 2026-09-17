@@ -7,6 +7,7 @@ import { OrderSnapshot, OrderStatusValue } from "../../types/order";
 import { StatusTimelineComponent } from "../../components/status-timeline/status-timeline.component";
 import { MetricsBarComponent } from "../../components/metrics-bar/metrics-bar.component";
 import { EventLogComponent, LogRow } from "../../components/event-log/event-log.component";
+import { SelectComponent } from "../../components/select/select.component";
 
 interface PollingMetrics {
   requests: number;
@@ -22,11 +23,12 @@ const INTERVAL_OPTIONS = [
   { label: "3s", value: 3000 },
   { label: "5s", value: 5000 },
 ];
+const AUTO_ADVANCE_MS = 10000;
 
 @Component({
   selector: "app-polling-panel",
   standalone: true,
-  imports: [CommonModule, StatusTimelineComponent, MetricsBarComponent, EventLogComponent],
+  imports: [CommonModule, StatusTimelineComponent, MetricsBarComponent, EventLogComponent, SelectComponent],
   templateUrl: "./polling-panel.component.html",
 })
 export class PollingPanelComponent implements OnDestroy {
@@ -43,6 +45,7 @@ export class PollingPanelComponent implements OnDestroy {
 
   private orderSub: Subscription;
   private pollSub?: Subscription;
+  private autoAdvanceTimer?: ReturnType<typeof setInterval>;
   private lastSeq: number | null = null;
   private delaySum = 0;
 
@@ -59,6 +62,7 @@ export class PollingPanelComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.orderSub.unsubscribe();
     this.pollSub?.unsubscribe();
+    this.stopAutoAdvance();
   }
 
   toggle(): void {
@@ -73,16 +77,39 @@ export class PollingPanelComponent implements OnDestroy {
     void this.currentOrder.startNewOrder();
   }
 
-  onIntervalChange(rawValue: string): void {
-    this.intervalMs = Number(rawValue);
+  advanceNow(): void {
+    if (this.orderId) {
+      this.ordersApi.advance(this.orderId).subscribe();
+    }
+  }
+
+  onIntervalChange(value: number): void {
+    this.intervalMs = value;
     if (this.running) {
       this.stop();
       this.start();
     }
   }
 
+  private stopAutoAdvance(): void {
+    if (this.autoAdvanceTimer !== undefined) {
+      clearInterval(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = undefined;
+    }
+  }
+
+  private startAutoAdvance(): void {
+    this.stopAutoAdvance();
+    this.autoAdvanceTimer = setInterval(() => {
+      if (this.orderId) {
+        this.ordersApi.advance(this.orderId).subscribe();
+      }
+    }, AUTO_ADVANCE_MS);
+  }
+
   private resetRun(): void {
     this.pollSub?.unsubscribe();
+    this.stopAutoAdvance();
     this.running = false;
     this.status = null;
     this.done = false;
@@ -101,11 +128,13 @@ export class PollingPanelComponent implements OnDestroy {
     this.pollSub = this.ordersApi
       .watch(this.orderId, this.intervalMs)
       .subscribe((snapshot) => this.handleSnapshot(snapshot));
+    this.startAutoAdvance();
   }
 
   private stop(): void {
     this.running = false;
     this.pollSub?.unsubscribe();
+    this.stopAutoAdvance();
   }
 
   private handleSnapshot(snapshot: OrderSnapshot): void {
