@@ -1,11 +1,14 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import http from "node:http";
+import { cors as connectCors } from "@connectrpc/connect";
+import { expressConnectMiddleware } from "@connectrpc/connect-express";
 import { ordersRoute } from "./core/orders.route.js";
 import { pollingRoute } from "./patterns/polling/polling.route.js";
 import { longPollingRoute } from "./patterns/long-polling/long-polling.route.js";
 import { sseRoute } from "./patterns/sse/sse.route.js";
 import { attachWebSocket } from "./patterns/websocket/websocket.js";
+import orderStreamRoutes from "./patterns/grpc-web/orderStreamRoutes.js";
 
 // Quatro jeitos do front descobrir que um pedido mudou, um por pasta em
 // src/patterns/: polling, long-polling, sse, websocket.
@@ -21,11 +24,22 @@ import { attachWebSocket } from "./patterns/websocket/websocket.js";
 // se o payload fosse grande o bastante pra importar ler aos pedaços.
 
 const app: Express = express();
-app.use(cors());
+// origin/methods/allowedHeaders continuam permissivos como antes — só
+// ganham os headers extras que o Connect precisa pro streaming gRPC-Web
+// (exposedHeaders). Widening, não restringe nada que já funcionava.
+app.use(
+  cors({
+    origin: true,
+    methods: [...connectCors.allowedMethods],
+    allowedHeaders: [...connectCors.allowedHeaders],
+    exposedHeaders: [...connectCors.exposedHeaders],
+  })
+);
 app.use("/api", ordersRoute);
 app.use("/api", pollingRoute);
 app.use("/api", longPollingRoute);
 app.use("/api", sseRoute);
+app.use(expressConnectMiddleware({ routes: orderStreamRoutes }));
 
 const server = http.createServer(app);
 attachWebSocket(server);
@@ -40,4 +54,6 @@ server.listen(PORT, () => {
   console.log("  GET  /api/orders/:id/stream          — SSE");
   console.log("  POST /api/dev/drop-sse");
   console.log("  ws   /api/orders/socket              — WebSocket");
+  console.log("  grpc-web tempo.real.v1.OrderStreamService/WatchOrder");
+  console.log("  grpc-web tempo.real.v1.OrderStreamService/AdvanceOrder");
 });
