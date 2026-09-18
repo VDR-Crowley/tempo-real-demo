@@ -29,7 +29,7 @@
 - Modify: `backend/package.json`
 
 **Interfaces:**
-- Produces: `OrderStreamService` (service descriptor), `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` (message types + `*Schema` consts) generated at `backend/src/generated/tempo/real/v1/order_stream_pb.ts` — consumed by Task 2.
+- Produces: `OrderStreamService` (service descriptor), `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` (message types + `*Schema` consts) generated at `backend/src/generated/order_stream_pb.ts` — consumed by Task 2.
 
 - [ ] **Step 1: Create the proto file**
 
@@ -113,7 +113,7 @@ plugins:
 - [ ] **Step 5: Generate and verify**
 
 Run: `cd backend && npm run proto:gen`
-Expected: creates `backend/src/generated/tempo/real/v1/order_stream_pb.ts` with no errors.
+Expected: creates `backend/src/generated/order_stream_pb.ts` with no errors.
 
 Run: `cd backend && npm run typecheck`
 Expected: passes (generated file type-checks cleanly on its own; nothing imports it yet).
@@ -154,7 +154,7 @@ Edit `backend/package.json` — add to `"scripts"`:
 import { describe, it } from "node:test";
 import assert from "node:assert";
 import { createClient, createRouterTransport, ConnectError } from "@connectrpc/connect";
-import { OrderStreamService } from "../../generated/tempo/real/v1/order_stream_pb.js";
+import { OrderStreamService } from "../../generated/order_stream_pb.js";
 import { ordersService } from "../../core/ordersService.js";
 import routes from "./orderStreamRoutes.js";
 
@@ -222,8 +222,8 @@ Expected: FAIL — `Cannot find module './orderStreamRoutes.js'` (file doesn't e
 ```ts
 import { ConnectError, Code, type ConnectRouter, type HandlerContext } from "@connectrpc/connect";
 import { ordersService } from "../../core/ordersService.js";
-import { OrderStreamService } from "../../generated/tempo/real/v1/order_stream_pb.js";
-import type { WatchOrderRequest, AdvanceOrderRequest } from "../../generated/tempo/real/v1/order_stream_pb.js";
+import { OrderStreamService } from "../../generated/order_stream_pb.js";
+import type { WatchOrderRequest, AdvanceOrderRequest } from "../../generated/order_stream_pb.js";
 import type { OrderEvent } from "../../types/order.js";
 
 // Ponte entre o EventEmitter("change") do ordersService (já usado pelo
@@ -435,7 +435,7 @@ git commit -m "feat: monta Connect (gRPC-Web) no Express, CORS ganha headers ext
 - Modify: `frontend-react/package.json`
 
 **Interfaces:**
-- Produces: `OrderStreamService`, `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` at `frontend-react/src/generated/tempo/real/v1/order_stream_pb.ts` — consumed by Task 5.
+- Produces: `OrderStreamService`, `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` at `frontend-react/src/generated/order_stream_pb.ts` — consumed by Task 5.
 
 - [ ] **Step 1: Add dependencies and script**
 
@@ -484,7 +484,7 @@ plugins:
 - [ ] **Step 4: Generate and verify**
 
 Run: `cd frontend-react && npm run proto:gen`
-Expected: creates `frontend-react/src/generated/tempo/real/v1/order_stream_pb.ts`.
+Expected: creates `frontend-react/src/generated/order_stream_pb.ts`.
 
 Run: `cd frontend-react && npx tsc --noEmit`
 Expected: passes.
@@ -515,8 +515,8 @@ git commit -m "feat: adiciona codegen do gRPC-Web no frontend-react"
 import { createClient } from "@connectrpc/connect";
 import { createGrpcWebTransport } from "@connectrpc/connect-web";
 import { API_URL } from "../../config";
-import { OrderStreamService } from "../../generated/tempo/real/v1/order_stream_pb";
-import type { OrderSnapshot as GrpcOrderSnapshot } from "../../generated/tempo/real/v1/order_stream_pb";
+import { OrderStreamService } from "../../generated/order_stream_pb";
+import type { OrderSnapshot as GrpcOrderSnapshot } from "../../generated/order_stream_pb";
 import type { OrderEvent, OrderStatusValue } from "../../types/order";
 
 interface GrpcWebHandlers {
@@ -889,7 +889,7 @@ git commit -m "feat: adiciona painel gRPC-Web (React) e aba nova"
 - Modify: `frontend-angular/package.json`
 
 **Interfaces:**
-- Produces: `OrderStreamService`, `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` at `frontend-angular/src/generated/tempo/real/v1/order_stream_pb.ts` — consumed by Task 9.
+- Produces: `OrderStreamService`, `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` at `frontend-angular/src/generated/order_stream_pb.ts` — consumed by Task 9.
 
 - [ ] **Step 1: Add dependencies and script**
 
@@ -936,7 +936,7 @@ plugins:
 - [ ] **Step 4: Generate and verify**
 
 Run: `cd frontend-angular && npm run proto:gen`
-Expected: creates `frontend-angular/src/generated/tempo/real/v1/order_stream_pb.ts`.
+Expected: creates `frontend-angular/src/generated/order_stream_pb.ts`.
 
 Run: `cd frontend-angular && npm run typecheck`
 Expected: passes. (This is the one point where Angular's pinned `typescript: ~5.4.5` meets code generated against a newer `@bufbuild/protobuf` — if this fails with a TS version incompatibility, bump `typescript` in this package.json to `~5.5.3` to match frontend-react, re-run `npm install`, and re-check.)
@@ -969,8 +969,8 @@ import { Observable } from "rxjs";
 import { createClient } from "@connectrpc/connect";
 import { createGrpcWebTransport } from "@connectrpc/connect-web";
 import { environment } from "../../../environments/environment";
-import { OrderStreamService } from "../../../generated/tempo/real/v1/order_stream_pb";
-import type { OrderSnapshot as GrpcOrderSnapshot } from "../../../generated/tempo/real/v1/order_stream_pb";
+import { OrderStreamService } from "../../../generated/order_stream_pb";
+import type { OrderSnapshot as GrpcOrderSnapshot } from "../../../generated/order_stream_pb";
 import { OrderEvent, OrderStatusValue } from "../../types/order";
 
 export type GrpcWebUpdate =

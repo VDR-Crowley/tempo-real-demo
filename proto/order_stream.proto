@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package tempo.real.v1;
+
+message OrderSnapshot {
+  string order_id = 1;
+  string status = 2;
+  int32 seq = 3;
+  string updated_at = 4;
+  bool done = 5;
+}
+
+message WatchOrderRequest {
+  string order_id = 1;
+}
+
+message AdvanceOrderRequest {
+  string order_id = 1;
+}
+
+service OrderStreamService {
+  rpc WatchOrder(WatchOrderRequest) returns (stream OrderSnapshot);
+  rpc AdvanceOrder(AdvanceOrderRequest) returns (OrderSnapshot);
+}
