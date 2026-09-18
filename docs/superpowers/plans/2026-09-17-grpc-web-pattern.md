@@ -1,6 +1,6 @@
 # gRPC-Web Pattern Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add a 5th real-time pattern (gRPC-Web) to the demo, mirrored across backend, React and Angular, demonstrating server-streaming order-status push plus a unary "advance" RPC.
 
@@ -31,7 +31,7 @@
 **Interfaces:**
 - Produces: `OrderStreamService` (service descriptor), `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` (message types + `*Schema` consts) generated at `backend/src/generated/order_stream_pb.ts` — consumed by Task 2.
 
-- [ ] **Step 1: Create the proto file**
+- [x] **Step 1: Create the proto file**
 
 `proto/order_stream.proto`:
 
@@ -62,7 +62,7 @@ service OrderStreamService {
 }
 ```
 
-- [ ] **Step 2: Add codegen + runtime dependencies to backend/package.json**
+- [x] **Step 2: Add codegen + runtime dependencies to backend/package.json**
 
 Edit `backend/package.json` — add to `"scripts"`:
 
@@ -88,12 +88,12 @@ Add to `"devDependencies"`:
     "@bufbuild/protoc-gen-es": "^2.15.0",
 ```
 
-- [ ] **Step 3: Install**
+- [x] **Step 3: Install**
 
 Run: `cd backend && npm install`
 Expected: installs cleanly, no peer dependency errors.
 
-- [ ] **Step 4: Create backend/buf.gen.yaml**
+- [x] **Step 4: Create backend/buf.gen.yaml**
 
 ```yaml
 version: v2
@@ -110,7 +110,7 @@ plugins:
 
 (`import_extension=js` is required here — and only here — because `backend/tsconfig.json` uses `"module": "NodeNext"`, which needs explicit `.js` extensions on relative imports. The frontends use bundler resolution and don't need this option.)
 
-- [ ] **Step 5: Generate and verify**
+- [x] **Step 5: Generate and verify**
 
 Run: `cd backend && npm run proto:gen`
 Expected: creates `backend/src/generated/order_stream_pb.ts` with no errors.
@@ -118,7 +118,7 @@ Expected: creates `backend/src/generated/order_stream_pb.ts` with no errors.
 Run: `cd backend && npm run typecheck`
 Expected: passes (generated file type-checks cleanly on its own; nothing imports it yet).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add proto/order_stream.proto backend/buf.gen.yaml backend/package.json backend/package-lock.json backend/src/generated
@@ -138,7 +138,7 @@ git commit -m "feat: adiciona contrato proto e codegen do gRPC-Web no backend"
 - Consumes: `ordersService.getState(orderId)`, `ordersService.advance(orderId)`, `ordersService.on("change", handler)` / `.off("change", handler)` (all already exist in `backend/src/core/ordersService.ts`, unmodified). `OrderStreamService`, `WatchOrderRequest`, `AdvanceOrderRequest` from Task 1's generated file.
 - Produces: `export default (router: ConnectRouter) => ConnectRouter` — consumed by Task 3's `server.ts` wiring.
 
-- [ ] **Step 1: Add a test script (no test runner exists yet in this backend)**
+- [x] **Step 1: Add a test script (no test runner exists yet in this backend)**
 
 Edit `backend/package.json` — add to `"scripts"`:
 
@@ -146,7 +146,7 @@ Edit `backend/package.json` — add to `"scripts"`:
     "test": "tsx --test src/**/*.test.ts",
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 `backend/src/patterns/grpc-web/orderStreamRoutes.test.ts`:
 
@@ -210,12 +210,12 @@ describe("OrderStreamService", () => {
 });
 ```
 
-- [ ] **Step 3: Run test, verify it fails**
+- [x] **Step 3: Run test, verify it fails**
 
 Run: `cd backend && npm test`
 Expected: FAIL — `Cannot find module './orderStreamRoutes.js'` (file doesn't exist yet).
 
-- [ ] **Step 4: Implement the service**
+- [x] **Step 4: Implement the service**
 
 `backend/src/patterns/grpc-web/orderStreamRoutes.ts`:
 
@@ -304,12 +304,12 @@ export default (router: ConnectRouter) =>
 
 Note: handler return values are plain objects matching `OrderSnapshot`'s shape (`orderId`, `status`, `seq`, `updatedAt`, `done`) — Connect's `ServiceImpl` type accepts plain init-shape objects for returns, no `create()`/`$typeName` needed. `ordersService.getState`/`.advance` already return exactly this shape (`backend/src/types/order.ts`), so no mapping is needed on the backend side.
 
-- [ ] **Step 5: Run test, verify it passes**
+- [x] **Step 5: Run test, verify it passes**
 
 Run: `cd backend && npm test`
 Expected: PASS — 3 tests green.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add backend/src/patterns/grpc-web backend/package.json
@@ -326,7 +326,7 @@ git commit -m "feat: implementa OrderStreamService (watch + advance) com teste e
 **Interfaces:**
 - Consumes: default export from `backend/src/patterns/grpc-web/orderStreamRoutes.ts` (Task 2).
 
-- [ ] **Step 1: Add the middleware and widen CORS**
+- [x] **Step 1: Add the middleware and widen CORS**
 
 Edit `backend/src/server.ts`. Current top:
 
@@ -397,7 +397,7 @@ And add a log line where the others are listed (after the `ws` line):
   console.log("  grpc-web tempo.real.v1.OrderStreamService/AdvanceOrder");
 ```
 
-- [ ] **Step 2: Typecheck and smoke-test**
+- [x] **Step 2: Typecheck and smoke-test**
 
 Run: `cd backend && npm run typecheck`
 Expected: passes.
@@ -419,7 +419,7 @@ Expected: JSON body like `{"orderId":"...","status":"Em separação","seq":2,"up
 
 Stop the dev server (Ctrl+C) after verifying.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add backend/src/server.ts
@@ -437,7 +437,7 @@ git commit -m "feat: monta Connect (gRPC-Web) no Express, CORS ganha headers ext
 **Interfaces:**
 - Produces: `OrderStreamService`, `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` at `frontend-react/src/generated/order_stream_pb.ts` — consumed by Task 5.
 
-- [ ] **Step 1: Add dependencies and script**
+- [x] **Step 1: Add dependencies and script**
 
 Edit `frontend-react/package.json` — add to `"scripts"`:
 
@@ -460,12 +460,12 @@ Add to `"devDependencies"`:
     "@bufbuild/protoc-gen-es": "^2.15.0",
 ```
 
-- [ ] **Step 2: Install**
+- [x] **Step 2: Install**
 
 Run: `cd frontend-react && npm install`
 Expected: installs cleanly.
 
-- [ ] **Step 3: Create frontend-react/buf.gen.yaml**
+- [x] **Step 3: Create frontend-react/buf.gen.yaml**
 
 ```yaml
 version: v2
@@ -481,7 +481,7 @@ plugins:
 
 (no `import_extension` here — Vite's bundler resolution doesn't need explicit `.js` extensions)
 
-- [ ] **Step 4: Generate and verify**
+- [x] **Step 4: Generate and verify**
 
 Run: `cd frontend-react && npm run proto:gen`
 Expected: creates `frontend-react/src/generated/order_stream_pb.ts`.
@@ -489,7 +489,7 @@ Expected: creates `frontend-react/src/generated/order_stream_pb.ts`.
 Run: `cd frontend-react && npx tsc --noEmit`
 Expected: passes.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend-react/buf.gen.yaml frontend-react/package.json frontend-react/package-lock.json frontend-react/src/generated
@@ -507,7 +507,7 @@ git commit -m "feat: adiciona codegen do gRPC-Web no frontend-react"
 - Consumes: `OrderStreamService` from Task 4's generated file; `API_URL` from `frontend-react/src/config.ts`; `OrderEvent`/`OrderStatusValue` from `frontend-react/src/types/order.ts`.
 - Produces: `openOrderStream(orderId, handlers): GrpcWebConnection` and `advanceOrder(orderId): Promise<void>` — same callback shape as `sseService.ts`'s `openOrderStream`, consumed by Task 6's hook and Task 7's panel.
 
-- [ ] **Step 1: Write the file**
+- [x] **Step 1: Write the file**
 
 `frontend-react/src/patterns/grpc-web/grpcWebService.ts`:
 
@@ -577,12 +577,12 @@ export function advanceOrder(orderId: string): Promise<void> {
 }
 ```
 
-- [ ] **Step 2: Typecheck**
+- [x] **Step 2: Typecheck**
 
 Run: `cd frontend-react && npx tsc --noEmit`
 Expected: passes (file isn't imported anywhere yet, but must compile standalone).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend-react/src/patterns/grpc-web/grpcWebService.ts
@@ -600,7 +600,7 @@ git commit -m "feat: adiciona client gRPC-Web (React) com wrapper de callback"
 - Consumes: `openOrderStream` from Task 5.
 - Produces: `useGrpcWeb(orderId): { status, done, connectionState, attempt, retryInSeconds, rows, running, toggle }` — consumed by Task 7's panel. Same shape as `useSSE`'s result, minus `lastEventId` (gRPC-Web streams don't have an SSE-style event id).
 
-- [ ] **Step 1: Write the file**
+- [x] **Step 1: Write the file**
 
 `frontend-react/src/patterns/grpc-web/useGrpcWeb.ts`:
 
@@ -744,12 +744,12 @@ export function useGrpcWeb(orderId: string | null): UseGrpcWebResult {
 }
 ```
 
-- [ ] **Step 2: Typecheck**
+- [x] **Step 2: Typecheck**
 
 Run: `cd frontend-react && npx tsc --noEmit`
 Expected: passes.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend-react/src/patterns/grpc-web/useGrpcWeb.ts
@@ -767,7 +767,7 @@ git commit -m "feat: adiciona useGrpcWeb (React) com reconexao manual"
 **Interfaces:**
 - Consumes: `useGrpcWeb` (Task 6), `advanceOrder` (Task 5), `StatusTimeline`/`ConnectionBadge`/`EventLog` (existing shared components — unchanged), `useCurrentOrderId`/`startNewOrder` (existing shared hook — unchanged).
 
-- [ ] **Step 1: Write the panel**
+- [x] **Step 1: Write the panel**
 
 `frontend-react/src/patterns/grpc-web/GrpcWebPanel.tsx`:
 
@@ -815,7 +815,7 @@ export default function GrpcWebPanel() {
 }
 ```
 
-- [ ] **Step 2: Wire the tab**
+- [x] **Step 2: Wire the tab**
 
 Edit `frontend-react/src/App.tsx`. Current:
 
@@ -867,13 +867,13 @@ const TABS: Tab[] = [
 ];
 ```
 
-- [ ] **Step 3: Verify in the browser**
+- [x] **Step 3: Verify in the browser**
 
 Run: `cd backend && npm run dev` (leave running), then `cd frontend-react && npm run dev` (leave running).
 Open `http://localhost:5173`, click "gRPC-Web" tab, click "Conectar".
 Expected: badge goes `conectando` → `conectado`, timeline starts advancing every 5s on its own, "Avançar agora" advances immediately. Check the browser Network tab: requests to `tempo.real.v1.OrderStreamService/WatchOrder` show `content-type: application/grpc-web+proto` (or `+json` if the transport falls back — confirm it's one of the two `grpc-web` variants, not `application/connect+...`).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add frontend-react/src/patterns/grpc-web/GrpcWebPanel.tsx frontend-react/src/App.tsx
@@ -891,7 +891,7 @@ git commit -m "feat: adiciona painel gRPC-Web (React) e aba nova"
 **Interfaces:**
 - Produces: `OrderStreamService`, `OrderSnapshot`/`WatchOrderRequest`/`AdvanceOrderRequest` at `frontend-angular/src/generated/order_stream_pb.ts` — consumed by Task 9.
 
-- [ ] **Step 1: Add dependencies and script**
+- [x] **Step 1: Add dependencies and script**
 
 Edit `frontend-angular/package.json` — add to `"scripts"`:
 
@@ -914,12 +914,12 @@ Add to `"devDependencies"`:
     "@bufbuild/protoc-gen-es": "^2.15.0",
 ```
 
-- [ ] **Step 2: Install**
+- [x] **Step 2: Install**
 
 Run: `cd frontend-angular && npm install`
 Expected: installs cleanly.
 
-- [ ] **Step 3: Create frontend-angular/buf.gen.yaml**
+- [x] **Step 3: Create frontend-angular/buf.gen.yaml**
 
 ```yaml
 version: v2
@@ -933,7 +933,7 @@ plugins:
       - target=ts
 ```
 
-- [ ] **Step 4: Generate and verify**
+- [x] **Step 4: Generate and verify**
 
 Run: `cd frontend-angular && npm run proto:gen`
 Expected: creates `frontend-angular/src/generated/order_stream_pb.ts`.
@@ -941,7 +941,7 @@ Expected: creates `frontend-angular/src/generated/order_stream_pb.ts`.
 Run: `cd frontend-angular && npm run typecheck`
 Expected: passes. (This is the one point where Angular's pinned `typescript: ~5.4.5` meets code generated against a newer `@bufbuild/protobuf` — if this fails with a TS version incompatibility, bump `typescript` in this package.json to `~5.5.3` to match frontend-react, re-run `npm install`, and re-check.)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend-angular/buf.gen.yaml frontend-angular/package.json frontend-angular/package-lock.json frontend-angular/src/generated
@@ -959,7 +959,7 @@ git commit -m "feat: adiciona codegen do gRPC-Web no frontend-angular"
 - Consumes: `OrderStreamService` from Task 8's generated file; `environment.apiUrl`; `OrderEvent`/`OrderStatusValue` from `frontend-angular/src/app/types/order.ts`.
 - Produces: `GrpcWebService.watch(orderId): Observable<GrpcWebUpdate>` and `.advance(orderId): Promise<void>` — same `{kind: "open"|"error"|"status"|"done"}` shape as `SseService`, consumed by Task 10's component.
 
-- [ ] **Step 1: Write the file**
+- [x] **Step 1: Write the file**
 
 `frontend-angular/src/app/patterns/grpc-web/grpc-web.service.ts`:
 
@@ -1033,12 +1033,12 @@ export class GrpcWebService {
 }
 ```
 
-- [ ] **Step 2: Typecheck**
+- [x] **Step 2: Typecheck**
 
 Run: `cd frontend-angular && npm run typecheck`
 Expected: passes.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add frontend-angular/src/app/patterns/grpc-web/grpc-web.service.ts
@@ -1058,7 +1058,7 @@ git commit -m "feat: adiciona GrpcWebService (Angular) com Observable"
 **Interfaces:**
 - Consumes: `GrpcWebService` (Task 9), `CurrentOrderService`, `StatusTimelineComponent`/`ConnectionBadgeComponent`/`EventLogComponent` (existing, unchanged).
 
-- [ ] **Step 1: Write the component**
+- [x] **Step 1: Write the component**
 
 `frontend-angular/src/app/patterns/grpc-web/grpc-web-panel.component.ts`:
 
@@ -1274,7 +1274,7 @@ export class GrpcWebPanelComponent implements OnDestroy {
 </section>
 ```
 
-- [ ] **Step 2: Wire the tab**
+- [x] **Step 2: Wire the tab**
 
 Edit `frontend-angular/src/app/app.component.ts`. Current:
 
@@ -1372,13 +1372,13 @@ becomes:
 </div>
 ```
 
-- [ ] **Step 3: Verify in the browser**
+- [x] **Step 3: Verify in the browser**
 
 Run: `cd backend && npm run dev` (leave running, if not already), then `cd frontend-angular && npm start` (leave running).
 Open the Angular dev URL, click "gRPC-Web" tab (accent should render red, matching this app's identity), click "Conectar".
 Expected: same behaviour as the React panel — badge `conectando` → `conectado`, timeline auto-advances every 5s, "Avançar agora" works immediately.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add frontend-angular/src/app/patterns/grpc-web frontend-angular/src/app/app.component.ts frontend-angular/src/app/app.component.html
@@ -1391,7 +1391,7 @@ git commit -m "feat: adiciona painel gRPC-Web (Angular) e aba nova"
 
 **Files:** none (verification only)
 
-- [ ] **Step 1: Run everything together**
+- [x] **Step 1: Run everything together**
 
 In three terminals:
 ```bash
@@ -1400,14 +1400,14 @@ cd frontend-react && npm run dev
 cd frontend-angular && npm start
 ```
 
-- [ ] **Step 2: Regression-check the 4 existing patterns in both frontends**
+- [x] **Step 2: Regression-check the 4 existing patterns in both frontends**
 
 For each of Polling, Long Polling, SSE, WebSocket, in both React and Angular:
 - Click "Novo pedido", click "Iniciar"/"Conectar".
 - Confirm status advances (auto and/or via "Avançar agora" where present) exactly as before this change.
 - Confirm no console errors related to CORS (the widened CORS config in Task 3 is the one shared-code change with any regression risk).
 
-- [ ] **Step 3: Exercise the new gRPC-Web panel end to end**
+- [x] **Step 3: Exercise the new gRPC-Web panel end to end**
 
 In both frontends:
 - "Novo pedido" → "Conectar" on the gRPC-Web tab.
@@ -1416,7 +1416,7 @@ In both frontends:
 - Start a new order, connect, and click "Avançar agora" repeatedly to confirm the unary RPC also works standalone.
 - In the Network tab, confirm the `WatchOrder` request's response `content-type` starts with `application/grpc-web` (not `application/connect+...`) — this is the concrete proof the wire protocol is actually gRPC-Web.
 
-- [ ] **Step 4: Full typecheck sweep**
+- [x] **Step 4: Full typecheck sweep**
 
 ```bash
 cd backend && npm run typecheck && npm test
@@ -1425,7 +1425,7 @@ cd frontend-angular && npm run typecheck
 ```
 Expected: all green.
 
-- [ ] **Step 5: Final commit (if anything was fixed during this task)**
+- [x] **Step 5: Final commit (if anything was fixed during this task)**
 
 ```bash
 git add -A
