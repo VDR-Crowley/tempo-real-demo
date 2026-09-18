@@ -112,8 +112,9 @@ Nova pasta `backend/src/patterns/grpc-web/`:
 
 Novas dependências no `backend/package.json`: `@connectrpc/connect`,
 `@connectrpc/connect-express`, `@connectrpc/connect-node`,
-`@bufbuild/protobuf`. Dev-only: `@bufbuild/buf`, `@bufbuild/protoc-gen-es`,
-`@connectrpc/protoc-gen-connect-es`.
+`@bufbuild/protobuf`. Dev-only: `@bufbuild/buf`, `@bufbuild/protoc-gen-es`
+(v2 — gera mensagens e definição de serviço no mesmo arquivo, não precisa
+mais de `protoc-gen-connect-es` separado).
 
 ## Frontend (React + Angular, espelhado)
 
@@ -140,8 +141,7 @@ Nova pasta `frontend-react/src/patterns/grpc-web/` e
 
 Novas dependências em cada `package.json` de frontend:
 `@connectrpc/connect`, `@connectrpc/connect-web`, `@bufbuild/protobuf`.
-Dev-only: `@bufbuild/buf`, `@bufbuild/protoc-gen-es`,
-`@connectrpc/protoc-gen-connect-es`.
+Dev-only: `@bufbuild/buf`, `@bufbuild/protoc-gen-es`.
 
 ## Fora de escopo
 
