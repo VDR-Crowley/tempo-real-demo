@@ -3,6 +3,7 @@ import PollingPanel from "./patterns/polling/PollingPanel";
 import LongPollingPanel from "./patterns/long-polling/LongPollingPanel";
 import SSEPanel from "./patterns/sse/SSEPanel";
 import SocketPanel from "./patterns/websocket/SocketPanel";
+import GrpcWebPanel from "./patterns/grpc-web/GrpcWebPanel";
 import { startNewOrder } from "./hooks/useCurrentOrder";
 
 interface Tab {
@@ -16,6 +17,7 @@ const TABS: Tab[] = [
   { id: "long-polling", label: "Long Polling", Panel: LongPollingPanel },
   { id: "sse", label: "SSE", Panel: SSEPanel },
   { id: "socket", label: "WebSocket", Panel: SocketPanel },
+  { id: "grpc-web", label: "gRPC-Web", Panel: GrpcWebPanel },
 ];
 
 export default function App() {
