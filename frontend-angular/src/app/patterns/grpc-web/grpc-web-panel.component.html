@@ -1,0 +1,10 @@
+<section>
+  <div class="panel-controls">
+    <button (click)="toggle()" [disabled]="done || !orderId">{{ running ? 'Desconectar' : 'Conectar' }}</button>
+    <button (click)="newOrder()">Novo pedido</button>
+    <button (click)="advanceNow()" [disabled]="!orderId || done">Avançar agora</button>
+  </div>
+  <app-connection-badge [state]="connectionState" [attempt]="attempt" [retryInSeconds]="retryInSeconds"></app-connection-badge>
+  <app-status-timeline [currentStatus]="status" [done]="done"></app-status-timeline>
+  <app-event-log [rows]="rows"></app-event-log>
+</section>

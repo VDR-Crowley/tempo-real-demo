@@ -4,9 +4,10 @@ import { PollingPanelComponent } from "./patterns/polling/polling-panel.componen
 import { LongPollingPanelComponent } from "./patterns/long-polling/long-polling-panel.component";
 import { SsePanelComponent } from "./patterns/sse/sse-panel.component";
 import { SocketPanelComponent } from "./patterns/websocket/socket-panel.component";
+import { GrpcWebPanelComponent } from "./patterns/grpc-web/grpc-web-panel.component";
 import { CurrentOrderService } from "./services/current-order.service";
 
-type TabId = "polling" | "long-polling" | "sse" | "socket";
+type TabId = "polling" | "long-polling" | "sse" | "socket" | "grpc-web";
 
 @Component({
   selector: "app-root",
@@ -17,6 +18,7 @@ type TabId = "polling" | "long-polling" | "sse" | "socket";
     LongPollingPanelComponent,
     SsePanelComponent,
     SocketPanelComponent,
+    GrpcWebPanelComponent,
   ],
   templateUrl: "./app.component.html",
 })

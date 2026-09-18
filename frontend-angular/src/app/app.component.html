@@ -5,10 +5,12 @@
     <button [class.active]="active === 'long-polling'" (click)="setActive('long-polling')">Long Polling</button>
     <button [class.active]="active === 'sse'" (click)="setActive('sse')">SSE</button>
     <button [class.active]="active === 'socket'" (click)="setActive('socket')">WebSocket</button>
+    <button [class.active]="active === 'grpc-web'" (click)="setActive('grpc-web')">gRPC-Web</button>
   </nav>
 
   <app-polling-panel *ngIf="active === 'polling'"></app-polling-panel>
   <app-long-polling-panel *ngIf="active === 'long-polling'"></app-long-polling-panel>
   <app-sse-panel *ngIf="active === 'sse'"></app-sse-panel>
   <app-socket-panel *ngIf="active === 'socket'"></app-socket-panel>
+  <app-grpc-web-panel *ngIf="active === 'grpc-web'"></app-grpc-web-panel>
 </div>
