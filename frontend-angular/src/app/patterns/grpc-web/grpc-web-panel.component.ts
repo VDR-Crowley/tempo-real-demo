@@ -183,6 +183,7 @@ export class GrpcWebPanelComponent implements OnDestroy {
 
   private stop(): void {
     this.running = false;
+    this.connectionState = "desconectado";
     this.streamSub?.unsubscribe();
     this.stopCountdown();
     this.stopAutoAdvance();

@@ -128,6 +128,7 @@ export function useGrpcWeb(orderId: string | null): UseGrpcWebResult {
         clearTimeout(reconnectTimer);
       }
       connection?.close();
+      setConnectionState("desconectado");
     };
   }, [orderId, running]);
 

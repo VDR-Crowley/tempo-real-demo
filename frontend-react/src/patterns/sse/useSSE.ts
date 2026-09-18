@@ -137,6 +137,7 @@ export function useSSE(orderId: string | null): UseSSEResult {
     return () => {
       connection.close();
       stopCountdown();
+      setConnectionState("desconectado");
     };
   }, [orderId, running]);
 
